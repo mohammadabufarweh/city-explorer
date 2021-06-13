@@ -1,0 +1,29 @@
+body{
+    width: 960px;
+    margin: auto;
+    text-align: center;
+    background-color: #E9EAEC;
+}
+.classHeader{
+    text-align: center;
+    color:#FAD02C;
+    background-color: #333652;
+}
+.formClass{
+    text-align: center;
+    color: black;
+    font-style:italic;
+
+}
+div Button{
+    background-color: red;
+    color: seagreen;
+}
+.amman{
+    color: rgb(255, 25, 0);
+}
+.footerClass{
+margin-top: 350px;
+color: #FAD02C;
+background-color: #333652;
+}
