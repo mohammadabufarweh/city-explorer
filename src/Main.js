@@ -12,6 +12,7 @@ export class Main extends Component {
     this.state = {
       citiesName: '',
       dataForCities: {},
+      dataWether: [],
       showingData: false,
       alert: false,
       error: ''
@@ -29,8 +30,12 @@ export class Main extends Component {
     try {
       const axiosResponse = await axios.get(`https://us1.locationiq.com/v1/search.php?key=pk.bd985e4e701a5b53341ec9e721b6098a
         &city=${this.state.citiesName}&format=json`);
+
+      const dataFromBackEnd = await axios.get(`${process.env.REACT_APP_URL}/weather-data`);
+
       this.setState({
         dataForCities: axiosResponse.data[0],
+        dataWether: dataFromBackEnd.data.data,
         showingData: true,
         alert: false
       });
@@ -69,14 +74,22 @@ export class Main extends Component {
 
           <p class='amman'>{this.state.dataForCities.display_name}</p>
           <p> latitude : {this.state.dataForCities.lat}</p>
-            <p>longitude : {this.state.dataForCities.lon}</p>
+          <p>longitude : {this.state.dataForCities.lon}</p>
           {this.state.showingData &&
 
             <img src={`https://maps.locationiq.com/v3/staticmap?key=pk.bd985e4e701a5b53341ec9e721b6098a&q&center=${this.state.dataForCities.lat},${this.state.dataForCities.lon}&zoom=10`} alt='' />
           }
         </Form>
 
-
+        {
+          this.state.dataWether.map(value => {
+            return (
+              <p>
+                {value.weather.description}
+              </p>
+            )
+          })
+        }
       </div>
 
     )
