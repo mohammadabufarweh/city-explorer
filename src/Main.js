@@ -12,11 +12,15 @@ export class Main extends Component {
     this.state = {
       citiesName: '',
       dataForCities: {},
-      weatherData: [],
+      weatherData: '',
+      movies: '',
       showingData: false,
-      alert: false,
-      error: '',
-      show:false
+      // alert: false,
+      // error: '',
+      show: false,
+      lat: '',
+      lon: '',
+      showMocies:false
     }
   };
 
@@ -28,28 +32,39 @@ export class Main extends Component {
 
   getdataForCities = async (event) => {
     event.preventDefault();
-    try {
-      const axiosResponse = await axios.get(`https://us1.locationiq.com/v1/search.php?key=pk.bd985e4e701a5b53341ec9e721b6098a
-        &city=${this.state.citiesName}&format=json`);
-
-      const dataFromBackEnd = await axios.get(`${process.env.REACT_APP_URL}/weather`);
-
+    await axios.get(`https://us1.locationiq.com/v1/search.php?key=pk.bd985e4e701a5b53341ec9e721b6098a
+        &city=${this.state.citiesName}&format=json`).then(locationResponse => {
       this.setState({
-        dataForCities: axiosResponse.data[0],
-        weatherData: dataFromBackEnd.data,
-        showingData: true,
-        alert: false,
-        show:true
+        dataForCities: locationResponse.data[0],
+        lat: locationResponse.data[0].lat,
+        lon: locationResponse.data[0].lon,
       });
 
-    } catch (error) {
-      this.setState({
-        error: error.message,
-        alert: true
-      })
-    }
+      axios.get(`${process.env.REACT_APP_URL}/weather?lat=${this.state.lat}&lon=${this.state.lon}`).then(weatherResponse => {
+        this.setState({
 
+          weatherData: weatherResponse.data,
+          showingData: true,
+          show: true
+        })
+
+      });
+      axios.get(`${process.env.REACT_APP_URL}/movies?query=${this.state.citiesName}`).then(response => {
+        this.setState({
+          movies: response.data,
+          showMocies: true
+        });
+      })
+      // .catch(error => {
+      //   this.setState({
+      //     showError: true,
+      //     errorMessage: error.message,
+      //   })
+      // });
+    });
   }
+
+
   render() {
     return (
       <div>
@@ -72,14 +87,14 @@ export class Main extends Component {
           <br></br>
           <br></br>
 
-          <Button class='buttonClass' variant="primary" type="submit"> Explore!</Button>
+          <Button class='buttonClass' variant="primary" type="submit"> Explore! </Button>
 
         </Form>
         <p class='amman'>{this.state.dataForCities.display_name}</p>
         <p> latitude : {this.state.dataForCities.lat}</p>
         <p>longitude : {this.state.dataForCities.lon}</p>
-        {this.state.showingData &&
 
+        {this.state.showingData &&
           <img src={`https://maps.locationiq.com/v3/staticmap?key=pk.bd985e4e701a5b53341ec9e721b6098a&q&center=${this.state.dataForCities.lat},${this.state.dataForCities.lon}&zoom=10`} alt='' />
         }
 
@@ -98,7 +113,26 @@ export class Main extends Component {
             )
           })
         }
+        {this.state.showMocies &&
+          this.state.movies.map(val => {
+            return (
+              <>
+                <p> {val.title} </p>
+                <p> {val.overview} </p>
+                <>
+                {/* <img src={val.image_url}>   </img> */}
+                <img variant="top" src={val.image_url}/>
+                </>
+                <p>  {val.released_on} </p>
+                <p> {val.popularity} </p>
+                <p> {val.average_votes} </p>
+                <p> {val.total_votes} </p>
 
+              </>
+            )
+          })
+
+        }
 
       </div>
 
