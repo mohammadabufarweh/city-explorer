@@ -117,7 +117,7 @@ export class Main extends Component {
           this.state.movies.map(val => {
             return (
               <>
-                <p> {val.title} </p>
+                <h1> {val.title} </h1>
                 <p> {val.overview} </p>
                 <>
                 {/* <img src={val.image_url}>   </img> */}
